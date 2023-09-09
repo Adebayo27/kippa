@@ -13,6 +13,9 @@
 </div>
 
 <br>
+@if($error !== null)
+<p>{{$error}}</p>
+@endif
 <div class="row">
     <form class="col-lg-7">
         @csrf
@@ -160,11 +163,7 @@
                 type: "GET",
                 cache: true,
                 success: function(response) {
-
-
-
                     $.each(response, function(key, value) {
-
                         $('#ordered-items').append(`
                 <tr>
                     <td>${value.product.sku}</td>
@@ -200,7 +199,6 @@
         },
         select: function(event, ui) {
             $('#distributor').val(ui.item.first_name);
-            console.log(ui.item);
             return false;
         }
     });

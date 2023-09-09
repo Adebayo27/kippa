@@ -19,4 +19,16 @@ class UserController extends Controller
 
         return response()->json($users);
     }
+
+    public function getUsersv(Request $request)
+    {
+        $users = User::select("first_name", "last_name", "username", "id", DB::raw('CONCAT(first_name, " ", last_name) as value'))
+                    ->where('first_name', 'LIKE', '%'. $request->search. '%')
+                    ->orWhere('last_name', 'LIKE', '%'. $request->search. '%')
+                    ->orWhere('username', 'LIKE', '%'. $request->search. '%')
+                    ->orWhere('id', 'LIKE', '%'. $request->search. '%')
+                    ->limit(10)->get();
+
+        return response()->json($users);
+    }
 }

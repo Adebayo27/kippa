@@ -2,28 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FilterOrderRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
-use App\Services\OrderService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class ReportController extends Controller
 {
-    public OrderService $orderService;
-    public function __construct(OrderService $orderService)
-    {
-        $this->orderService = $orderService;
-    }
-
     public function index(Request $request)
     {
        
         try {
             $query = Order::with(['user.userCategory.category', 'orderItems.product']);
-            if (isset($request->startDate) && $request->startDate !== '' && isset($request->endDate) && $request->endDate != '') {
+            if (isset($request->startDate) && $request->startDate !== '' && isset($request->endDate) && $request->endDate !== '') {
                 $query->whereBetween('order_date', [$request->startDate, $request->endDate]);
             }
 
@@ -39,11 +30,11 @@ class ReportController extends Controller
                         ->orWhere('id', 'like', "%{$user}%");
                 });
             }
-
+            
             $orders = $query->paginate(15)->withQueryString();
-            return view('report', ['orders' => $orders]);
+            return view('report', ['orders' => $orders, 'error' => null]);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            return view('report', ['orders' > [], 'error' => $th->getMessage()]);
         }
     }
 
@@ -56,7 +47,7 @@ class ReportController extends Controller
     public function topSelling()
     {
         $users = User::whereHas('referrers')
-                ->limit(500)
+                ->limit(100)
                 ->get()
                 ->reject(function($user){
                     return $user->is_distributor === false;

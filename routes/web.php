@@ -15,5 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::match(['POST', 'GET'], '/' , [ReportController::class, 'index']);
+Route::get('/' , [ReportController::class, 'index']);
 Route::get('/top-distributors', [ReportController::class, 'topSelling'])->name('top.distributor');
